@@ -6,17 +6,31 @@
     let globalId = 1;
     let todoState = [];
     let oldTodoState = [];
+    const todosID = "todos";
 
-    function addTodoToDom() {
-      
+    function addTodoToDom(todo) {
+      const child = document.createElement("div");
+      titleChild = document.createElement("div");
+      titleChild.innerHTML = todo.title;
+      descChild = document.createElement("div");
+      descChild.innerHTML =  todo.description;
+
+      child.setAttribute("id", todo.id);
+      child.appendChild(titleChild);
+      child.appendChild(descChild);
+      document.getElementById(todosID).appendChild(child);
     }
 
     function removeTodoFromDom(todo) {
-      
+      const child = document.getElementById(todo.id);
+      document.getElementById(todosID).removeChild(child);
     }
 
     function updateTodoInDom(oldTodo, newTodo) {
-        
+        const element = document.getElementById(oldTodo.id);
+        element.children[0].innerHTML = newTodo.title;
+        element.children[1].innerHTML = newTodo.description;
+        return element;
     }
 
     function updateState(newTodos) {
@@ -25,13 +39,44 @@
       // 1. added
       // 2. deleted
       // 3. updated
-      const added = [];
-      const deleted = [];
-      const updated = [];
+      console.log('oldTodo');
+      console.log(oldTodoState);
+      console.log('newtodo');
+      console.log(newTodos);
+      console.log(oldTodoState === newTodos)
+      let added = [];
+      let deleted = [];
+      let updated = [];
       // calculate these 3 arrays
       // call addTodo, removeTodo, updateTodo functions on each of the
       // elements
-      oldTodoState = newTodos;
+      newTodos.map((todo) => {
+        const todoFound = oldTodoState.find((oldTodo) => oldTodo.id === todo.id);
+        // console.log(todoFound);
+        if(!todoFound) {
+          added.push(todo)
+        }
+        else {
+          if(todo.title !== todoFound.title || todo.description !== todoFound.description) {
+            updated.push(todo);
+          }
+        }
+      })
+
+      deleted = oldTodoState.filter((oldTodo) => {
+        if(!(newTodos.find((todo) => todo.id===oldTodo.id))) {
+          return oldTodo;
+        }
+      });
+
+      added.forEach((todo) => addTodoToDom(todo));
+
+      console.log(added);
+      console.log(updated);
+      console.log(deleted);
+
+
+      oldTodoState = [...newTodos];
     }
 
     function addTodo() {
